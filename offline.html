@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SE Presentation (100% Offline Ready) | React Native & Supabase Testing</title>
+  <style>
+    :root {
+      --bg: #F8FAFC;
+      --card-bg: #FFFFFF;
+      --card-border: #E2E8F0;
+      --accent: #2563EB;
+      --text-main: #0F172A;
+      --text-muted: #64748B;
+      --radius: 14px;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Plus Jakarta Sans", "Segoe UI", Roboto, sans-serif;
+    }
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 16px 24px;
+    }
+    header {
+      background: #FFFFFF;
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-logo {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: #0F172A;
+      color: #FFFFFF;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+    }
+    .brand-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: #0F172A;
+    }
+    .brand-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .tab-btn {
+      background: #F1F5F9;
+      border: 1px solid transparent;
+      color: #475569;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .tab-btn.active {
+      background: #FFFFFF;
+      color: #0F172A;
+      border-color: var(--card-border);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    .timer-badge {
+      display: flex;
+      align-items: center;
+      background: #F1F5F9;
+      border: 1px solid var(--card-border);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 12px;
+      color: #334155;
+      font-weight: bold;
+    }
+    main {
+      flex: 1;
+      background: #FFFFFF;
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 36px 44px;
+      min-height: 580px;
+      box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+    }
+    .slide {
+      display: none;
+      height: 100%;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .slide.active {
+      display: flex;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      background: #F1F5F9;
+      border: 1px solid var(--card-border);
+      color: #475569;
+    }
+    .headline {
+      font-size: 40px;
+      font-weight: 800;
+      line-height: 1.2;
+      color: #0F172A;
+      margin: 16px 0;
+    }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 14px;
+    }
+    .card {
+      background: #FFFFFF;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 16px;
+      transition: all 0.2s;
+    }
+    .card:hover {
+      border-color: #CBD5E1;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .member-badge {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: #EFF6FF;
+      color: #2563EB;
+      font-weight: 800;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .speaker-box {
+      background: #F8FAFC;
+      border: 1px solid var(--card-border);
+      border-left: 4px solid var(--accent);
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-top: 14px;
+    }
+    .speaker-title {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+    .speaker-text {
+      font-size: 13px;
+      line-height: 1.6;
+      color: #334155;
+    }
+    .flow-container {
+      background: #F8FAFC;
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 20px;
+    }
+    .flow-steps {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .flow-node {
+      flex: 1;
+      background: #FFFFFF;
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 14px;
+      text-align: center;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    }
+    .flow-node.active {
+      border-color: var(--accent);
+      background: #EFF6FF;
+    }
+    .flow-arrow {
+      color: #94A3B8;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    footer {
+      margin-top: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .nav-btn {
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--card-border);
+      background: #FFFFFF;
+      color: #334155;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+    .nav-btn.primary {
+      background: var(--accent);
+      color: #FFFFFF;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  
+  
+
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <div class="brand-logo">SE</div>
+      <div>
+        <div class="brand-title">Software Engineering Presentation</div>
+        <div class="brand-sub" id="brandPresenter">Speaker: <strong style="color:var(--react-cyan)" id="speakerName">Rajat (Member 1)</strong></div>
+      </div>
+    </div>
+
+    <div class="header-controls">
+      <div class="timer-badge">
+        <span id="timerDisplay">00:00</span>
+      </div>
+      <button class="tab-btn active" onclick="goToSlide(1)">1. Title</button>
+      <button class="tab-btn" onclick="goToSlide(2)">2. Problem</button>
+      <button class="tab-btn" onclick="goToSlide(3)">3. Arch</button>
+      <button class="tab-btn" onclick="goToSlide(4)">4. Black-Box</button>
+      <button class="tab-btn" onclick="goToSlide(5)">5. Case Study</button>
+      <button class="tab-btn" onclick="goToSlide(6)">6. Matrix</button>
+      <button class="tab-btn" onclick="goToSlide(7)">7. White-Box</button>
+      <button class="tab-btn" onclick="goToSlide(8)">8. Code Study</button>
+      <button class="tab-btn" onclick="goToSlide(9)">9. Grey-Box</button>
+      <button class="tab-btn" onclick="goToSlide(10)">10. Security</button>
+      <button class="tab-btn" onclick="goToSlide(11)">11. Comparison</button>
+      <button class="tab-btn" onclick="goToSlide(12)">12. Conclusion</button>
+    </div>
+  </header>
+
+  <!-- Slide Canvas -->
+  <main>
+    <!-- Slide 1 -->
+    <div class="slide active" id="slide1">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span class="pill pill-cyan">Subject: Software Engineering</span>
+        <span class="pill pill-green">Ref: IJISE Research Article</span>
+      </div>
+
+      <div style="margin: auto 0;">
+        <p style="font-size: 13px; font-family: monospace; color: var(--text-muted); margin-bottom: 8px;">● MEMBER 1 — INTRODUCTION & APPLICATION</p>
+        <h1 class="headline">
+          Difference and Application of <br />
+          <span class="gradient-text">White-Box, Black-Box,</span> and <br />
+          <span class="gradient-text">Grey-Box Testing</span>
+        </h1>
+        <div style="display: flex; align-items: center; gap: 12px; margin-top: 16px;">
+          <div style="width: 4px; height: 38px; background: var(--supabase-green); border-radius: 2px;"></div>
+          <div>
+            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: bold;">Case Study</div>
+            <div style="font-size: 20px; font-weight: bold; color: #fff;">React Native / Supabase Demo App</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <p style="font-size: 12px; font-weight: bold; color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase;">Team Members (4)</p>
+        <div class="grid-4">
+          <div class="card" style="border-color: rgba(97,218,251,0.5); background: rgba(97,218,251,0.08);">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <div class="member-badge">1</div>
+              <div>
+                <strong style="font-size: 14px; color: #fff;">Rajat</strong>
+                <div style="font-size: 11px; color: var(--react-cyan);">Intro & Architecture (Presenter)</div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <div class="member-badge" style="background: linear-gradient(135deg, var(--supabase-green), #059669)">2</div>
+              <div>
+                <strong style="font-size: 14px; color: #fff;">Priyanshu Tewatiya</strong>
+                <div style="font-size: 11px; color: var(--text-muted);">Member 2</div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <div class="member-badge" style="background: linear-gradient(135deg, #a78bfa, #7c3aed)">3</div>
+              <div>
+                <strong style="font-size: 14px; color: #fff;">Sahil Kumar</strong>
+                <div style="font-size: 11px; color: var(--text-muted);">Member 3</div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <div class="member-badge" style="background: linear-gradient(135deg, #fbbf24, #d97706)">4</div>
+              <div>
+                <strong style="font-size: 14px; color: #fff;">Puspendar Chauhan</strong>
+                <div style="font-size: 11px; color: var(--text-muted);">Member 4</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 2 -->
+    <div class="slide" id="slide2">
+      <div>
+        <span class="pill pill-cyan">Member 1 • Slide 02</span>
+        <h2 style="font-size: 32px; font-weight: 800; margin-top: 8px;">
+          Introduction and <span class="gradient-text">Problem Statement</span>
+        </h2>
+      </div>
+
+      <div class="grid-2" style="margin: auto 0;">
+        <div class="card">
+          <div style="font-size: 10px; font-weight: bold; color: var(--react-cyan); text-transform: uppercase;">01 / Quality</div>
+          <h3 style="font-size: 17px; font-weight: bold; margin: 4px 0 6px 0;">Software testing helps identify defects.</h3>
+          <p style="font-size: 12px; color: var(--text-muted);">Detects bugs and weaknesses early before release.</p>
+        </div>
+
+        <div class="card">
+          <div style="font-size: 10px; font-weight: bold; color: #fbbf24; text-transform: uppercase;">02 / Three Defect Types</div>
+          <h3 style="font-size: 17px; font-weight: bold; margin: 4px 0 6px 0;">Applications have functional, logical, and security issues.</h3>
+          <p style="font-size: 12px; color: var(--text-muted);">Functional (UI break), Logical (flawed data), Security (leaks).</p>
+        </div>
+
+        <div class="card">
+          <div style="font-size: 10px; font-weight: bold; color: var(--supabase-green); text-transform: uppercase;">03 / Method Diversity</div>
+          <h3 style="font-size: 17px; font-weight: bold; margin: 4px 0 6px 0;">Different testing methods reveal different problems.</h3>
+          <p style="font-size: 12px; color: var(--text-muted);">White-box inspects code, Black-box tests UI, Grey-box tests APIs.</p>
+        </div>
+
+        <div class="card">
+          <div style="font-size: 10px; font-weight: bold; color: #c084fc; text-transform: uppercase;">04 / Case Study</div>
+          <h3 style="font-size: 17px; font-weight: bold; margin: 4px 0 6px 0;">The case study compares three testing approaches.</h3>
+          <p style="font-size: 12px; color: var(--text-muted);">Evaluated directly on our React Native & Supabase demo app.</p>
+        </div>
+      </div>
+
+      <div class="speaker-box">
+        <div class="speaker-title">Key Takeaways</div>
+        <div class="speaker-text">
+          • An application may look completely fine and work smoothly on the screen, but it can still hide severe logic bugs and security weaknesses.<br />
+          • Different testing methods reveal different problems — Black-box checks visible UI, White-box checks source code, and Grey-box tests API integration.<br />
+          • The primary goal of testing is to discover and eliminate these defects early before they cause real problems for users.
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 3 -->
+    <div class="slide" id="slide3">
+      <div>
+        <span class="pill pill-green">Member 1 • Slide 03</span>
+        <h2 style="font-size: 32px; font-weight: 800; margin-top: 8px;">
+          Application Overview & <span class="gradient-text">Architecture</span>
+        </h2>
+      </div>
+
+      <div class="flow-container" style="margin: auto 0;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <strong style="font-size: 12px; color: var(--text-muted); text-transform: uppercase;">System Architecture Diagram</strong>
+          <button class="sim-btn" onclick="simulateDataFlow()">▶ Simulate Request Flow</button>
+        </div>
+
+        <div class="flow-steps">
+          <div class="flow-node" id="node1">
+            <div style="font-size: 11px; color: var(--text-muted); font-weight: bold;">Step 01</div>
+            <strong style="font-size: 15px; color: #fff;">User</strong>
+            <div style="font-size: 11px; color: var(--text-muted);">Interacts / clicks</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node" id="node2">
+            <div style="font-size: 11px; color: var(--react-cyan); font-weight: bold;">Step 02</div>
+            <strong style="font-size: 15px; color: #fff;">React Native App</strong>
+            <div style="font-size: 11px; color: var(--react-cyan);">Application interface</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node" id="node3">
+            <div style="font-size: 11px; color: var(--supabase-green); font-weight: bold;">Step 03</div>
+            <strong style="font-size: 15px; color: #fff;">Supabase</strong>
+            <div style="font-size: 11px; color: var(--supabase-green);">Backend & Auth</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node" id="node4">
+            <div style="font-size: 11px; color: #60a5fa; font-weight: bold;">Step 04</div>
+            <strong style="font-size: 15px; color: #fff;">PostgreSQL</strong>
+            <div style="font-size: 11px; color: #60a5fa;">Database storage</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06); font-size: 12px; color: var(--text-muted);">
+          <strong style="color: #fff;">Main Functions:</strong> User authentication and creating, viewing, and deleting comments.
+        </div>
+      </div>
+
+      <div class="speaker-box green">
+        <div class="speaker-title">Key Takeaways</div>
+        <div class="speaker-text">
+          • The user directly interacts with the React Native frontend interface, which manages all user input and screen actions.<br />
+          • The mobile app communicates with Supabase backend services, which verify user authentication and handle backend API requests.<br />
+          • The PostgreSQL database securely stores comments and user data; this complete architecture serves as our case study to evaluate testing methods.
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 4 -->
+    <div class="slide" id="slide4">
+      <div>
+        <span class="pill pill-green">Member 2 (Priyanshu) • Slide 04</span>
+        <h2 style="font-size: 32px; font-weight: 800; margin-top: 8px;">
+          What is <span class="gradient-text">Black-Box Testing?</span>
+        </h2>
+      </div>
+
+      <div class="grid-4" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); margin: auto 0;">
+        <div class="card">
+          <div style="font-size: 10px; font-weight: bold; color: var(--supabase-green); text-transform: uppercase;">01 / Scope</div>
+          <h3 style="font-size: 16px; font-weight: bold; margin: 6px 0;">Tests application functionality without examining internal source code.</h3>
+          <p style="font-size: 12px; color: var(--text-muted);">Internal source code structure is unknown to the tester.</p>
+        </div>
+
+        <div class="card">
+          <div style="font-size: 10px; font-weight: bold; color: var(--react-cyan); text-transform: uppercase;">02 / Focus</div>
+          <h3 style="font-size: 16px; font-weight: bold; margin: 6px 0;">Focuses on inputs and outputs.</h3>
+          <p style="font-size: 12px; color: var(--text-muted);">Tester gives input, sees output, and evaluates results.</p>
+        </div>
+
+        <div class="card">
+          <div style="font-size: 10px; font-weight: bold; color: #a78bfa; text-transform: uppercase;">03 / Goal</div>
+          <h3 style="font-size: 16px; font-weight: bold; margin: 6px 0;">Checks whether the application behaves as expected.</h3>
+          <p style="font-size: 12px; color: var(--text-muted);">Matches real output against defined software requirements.</p>
+        </div>
+      </div>
+
+      <div class="speaker-box green">
+        <div class="speaker-title">Key Takeaways</div>
+        <div class="speaker-text">
+          • A tester interacts with the application just like an ordinary user, without having any access to the internal source code.<br />
+          • Testing is focused entirely on providing inputs and evaluating the observed outputs to ensure expected behavior.<br />
+          • The internal logic and implementation details remain completely hidden from the tester throughout the entire process.
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 5 -->
+    <div class="slide" id="slide5">
+      <div>
+        <span class="pill pill-cyan">Member 2 (Priyanshu) • Slide 05</span>
+        <h2 style="font-size: 32px; font-weight: 800; margin-top: 8px;">
+          Black-Box Testing in the <span class="gradient-text">Case Study</span>
+        </h2>
+      </div>
+
+      <div class="grid-2" style="margin: auto 0;">
+        <div class="card">
+          <div style="font-size: 10px; font-weight: bold; color: var(--react-cyan); text-transform: uppercase;">Test 01</div>
+          <h3 style="font-size: 16px; font-weight: bold; margin: 4px 0;">Test user registration and login.</h3>
+          <p style="font-size: 12px; color: var(--text-muted);">Verify valid user accounts can register and log in.</p>
+        </div>
+
+        <div class="card">
+          <div style="font-size: 10px; font-weight: bold; color: var(--supabase-green); text-transform: uppercase;">Test 02</div>
+          <h3 style="font-size: 16px; font-weight: bold; margin: 4px 0;">Create a comment and verify that it appears.</h3>
+          <p style="font-size: 12px; color: var(--text-muted);">Enter comment text and verify it shows on screen.</p>
+        </div>
+
+        <div class="card">
+          <div style="font-size: 10px; font-weight: bold; color: #f87171; text-transform: uppercase;">Test 03</div>
+          <h3 style="font-size: 16px; font-weight: bold; margin: 4px 0;">Delete a comment and check that it disappears.</h3>
+          <p style="font-size: 12px; color: var(--text-muted);">Tap delete and confirm comment is removed from list.</p>
+        </div>
+
+        <div class="card">
+          <div style="font-size: 10px; font-weight: bold; color: #fbbf24; text-transform: uppercase;">Test 04</div>
+          <h3 style="font-size: 16px; font-weight: bold; margin: 4px 0;">Test invalid inputs and error messages.</h3>
+          <p style="font-size: 12px; color: var(--text-muted);">Submit wrong password or empty inputs to check errors.</p>
+        </div>
+      </div>
+
+      <div class="speaker-box">
+        <div class="speaker-title">Key Takeaways</div>
+        <div class="speaker-text">
+          • The tester evaluates the application by checking observable, visible results directly on the mobile interface.<br />
+          • For example, after submitting a comment, the tester verifies that it immediately appears in the comment feed as expected.<br />
+          • These test scenarios are illustrative case studies designed to demonstrate how real user interactions are validated.
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 6 -->
+    <div class="slide" id="slide6">
+      <div>
+        <span class="pill pill-green">Member 2 (Priyanshu) • Slide 06</span>
+        <h2 style="font-size: 32px; font-weight: 800; margin-top: 8px;">
+          Black-Box <span class="gradient-text">Test Cases and Findings</span>
+        </h2>
+      </div>
+
+      <div style="margin: auto 0;">
+        <table style="width: 100%; border-collapse: collapse; background: rgba(10,15,26,0.7); border: 1px solid var(--card-border); border-radius: 12px; overflow: hidden;">
+          <thead>
+            <tr style="background: rgba(30,41,59,0.8); color: var(--text-muted); font-size: 12px; text-transform: uppercase;">
+              <th style="padding: 12px 16px; text-align: left;">Test</th>
+              <th style="padding: 12px 16px; text-align: left;">Expected Result</th>
+              <th style="padding: 12px 16px; text-align: right;">Status</th>
+            </tr>
+          </thead>
+          <tbody style="font-size: 14px;">
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.06);">
+              <td style="padding: 12px 16px; font-weight: bold; color: #fff;">Valid login</td>
+              <td style="padding: 12px 16px; color: #e2e8f0;">User signs in</td>
+              <td style="padding: 12px 16px; text-align: right; color: var(--supabase-green); font-weight: bold;">✓ Passed</td>
+            </tr>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.06);">
+              <td style="padding: 12px 16px; font-weight: bold; color: #fff;">Create comment</td>
+              <td style="padding: 12px 16px; color: #e2e8f0;">Comment appears</td>
+              <td style="padding: 12px 16px; text-align: right; color: var(--supabase-green); font-weight: bold;">✓ Passed</td>
+            </tr>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.06);">
+              <td style="padding: 12px 16px; font-weight: bold; color: #fff;">Delete comment</td>
+              <td style="padding: 12px 16px; color: #e2e8f0;">Comment disappears</td>
+              <td style="padding: 12px 16px; text-align: right; color: var(--supabase-green); font-weight: bold;">✓ Passed</td>
+            </tr>
+            <tr>
+              <td style="padding: 12px 16px; font-weight: bold; color: #fff;">Invalid login</td>
+              <td style="padding: 12px 16px; color: #e2e8f0;">Error or rejection</td>
+              <td style="padding: 12px 16px; text-align: right; color: var(--supabase-green); font-weight: bold;">✓ Passed</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="speaker-box green">
+        <div class="speaker-title">Key Takeaways</div>
+        <div class="speaker-text">
+          • Black-box testing is highly effective for identifying visible functional errors and user-facing interface defects.<br />
+          • It confirms that core user workflows, like authentication and commenting, operate properly from an end-user standpoint.<br />
+          • However, it cannot reveal internal source code defects, such as unused functions, memory leaks, or unhandled exceptions.
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 7 -->
+    <div class="slide" id="slide7">
+      <div>
+        <span class="pill pill-cyan" style="color:#c084fc; border-color: rgba(192,132,252,0.3); background: rgba(192,132,252,0.1);">Member 3 (Sahil Kumar) • Slide 07</span>
+        <h2 style="font-size: 32px; font-weight: 800; margin-top: 8px;">
+          What is <span class="gradient-text">White-Box Testing?</span>
+        </h2>
+      </div>
+
+      <div class="grid-4" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); margin: auto 0;">
+        <div class="card">
+          <div style="font-size: 10px; font-weight: bold; color: #c084fc; text-transform: uppercase;">01 / Code Level</div>
+          <h3 style="font-size: 16px; font-weight: bold; margin: 6px 0;">Examines internal source code and logic.</h3>
+          <p style="font-size: 12px; color: var(--text-muted);">Tester looks directly inside functions, algorithms, and statements.</p>
+        </div>
+
+        <div class="card">
+          <div style="font-size: 10px; font-weight: bold; color: var(--react-cyan); text-transform: uppercase;">02 / Branches</div>
+          <h3 style="font-size: 16px; font-weight: bold; margin: 6px 0;">Checks conditions, branches, and execution paths.</h3>
+          <p style="font-size: 12px; color: var(--text-muted);">Tests every if-else statement, loop, and logical condition.</p>
+        </div>
+
+        <div class="card">
+          <div style="font-size: 10px; font-weight: bold; color: var(--supabase-green); text-transform: uppercase;">03 / Implementation</div>
+          <h3 style="font-size: 16px; font-weight: bold; margin: 6px 0;">Requires knowledge of the program's implementation.</h3>
+          <p style="font-size: 12px; color: var(--text-muted);">Tester must understand the programming language and structure.</p>
+        </div>
+      </div>
+
+      <div class="speaker-box" style="border-left-color: #c084fc;">
+        <div class="speaker-title" style="color: #c084fc;">Key Takeaways</div>
+        <div class="speaker-text">
+          • Unlike black-box testing where the code is invisible, white-box testing looks directly into the inner source code to see exactly how functions work behind the scenes.<br />
+          • The tester inspects every logical condition, loop, and if-else branch to verify that all possible paths in the software execute correctly and safely.<br />
+          • By examining the internal program logic, a tester can easily identify faulty calculations, missing validation checks, and unused functions that never get called.
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 8 -->
+    <div class="slide" id="slide8">
+      <div>
+        <span class="pill pill-cyan">Member 3 (Sahil Kumar) • Slide 08</span>
+        <h2 style="font-size: 32px; font-weight: 800; margin-top: 8px;">
+          White-Box Testing in the <span class="gradient-title">Case Study</span>
+        </h2>
+      </div>
+
+      <div class="grid-2" style="margin: auto 0;">
+        <div class="card">
+          <div style="font-size: 10px; font-weight: bold; color: var(--react-cyan); text-transform: uppercase;">Area 01</div>
+          <h3 style="font-size: 16px; font-weight: bold; margin: 4px 0;">Examine comment-handling functions.</h3>
+          <p style="font-size: 12px; color: var(--text-muted);">Inspect functions that create, fetch, and delete comments to ensure they handle parameters properly.</p>
+        </div>
+
+        <div class="card">
+          <div style="font-size: 10px; font-weight: bold; color: #c084fc; text-transform: uppercase;">Area 02</div>
+          <h3 style="font-size: 16px; font-weight: bold; margin: 4px 0;">Check authentication and authorization logic.</h3>
+          <p style="font-size: 12px; color: var(--text-muted);">Verify that the code checks the logged-in user's identity before allowing them to delete or edit a comment.</p>
+        </div>
+
+        <div class="card">
+          <div style="font-size: 10px; font-weight: bold; color: var(--supabase-green); text-transform: uppercase;">Area 03</div>
+          <h3 style="font-size: 16px; font-weight: bold; margin: 4px 0;">Inspect database operations and connections.</h3>
+          <p style="font-size: 12px; color: var(--text-muted);">Ensure Supabase queries are properly structured and database connections are safely handled and isolated.</p>
+        </div>
+
+        <div class="card">
+          <div style="font-size: 10px; font-weight: bold; color: #fbbf24; text-transform: uppercase;">Area 04</div>
+          <h3 style="font-size: 16px; font-weight: bold; margin: 4px 0;">Identify unused functions and internal defects.</h3>
+          <p style="font-size: 12px; color: var(--text-muted);">Locate dead code, leftover test functions, and unhandled error cases that black-box testing cannot see.</p>
+        </div>
+      </div>
+
+      <div class="speaker-box">
+        <div class="speaker-title">Key Takeaways</div>
+        <div class="speaker-text">
+          • In our React Native and Supabase case study, the tester inspects the actual code to make sure a comment can only be deleted by the person who created it.<br />
+          • By reading through the code directly, white-box testing uncovers hidden bugs like unisolated database queries that might slow down the database or cause memory issues.<br />
+          • It also identifies dead code and unused functions left behind by developers, helping clean up and secure the application before release.
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 9 -->
+    <div class="slide" id="slide9">
+      <div>
+        <span class="pill pill-cyan" style="color:#f59e0b; border-color: rgba(245,158,11,0.3); background: rgba(245,158,11,0.1);">Member 4 (Puspendar) • Slide 09</span>
+        <h2 style="font-size: 32px; font-weight: 800; margin-top: 8px;">
+          What is <span class="gradient-text">Grey-Box Testing?</span>
+        </h2>
+      </div>
+
+      <div class="grid-4" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); margin: auto 0;">
+        <div class="card">
+          <div style="font-size: 10px; font-weight: bold; color: #f59e0b; text-transform: uppercase;">01 / Hybrid</div>
+          <h3 style="font-size: 16px; font-weight: bold; margin: 6px 0;">Combines external testing with partial internal knowledge.</h3>
+          <p style="font-size: 12px; color: var(--text-muted);">Blends user-facing UI actions with backend understanding.</p>
+        </div>
+
+        <div class="card">
+          <div style="font-size: 10px; font-weight: bold; color: var(--react-cyan); text-transform: uppercase;">02 / Architecture</div>
+          <h3 style="font-size: 16px; font-weight: bold; margin: 6px 0;">May use knowledge of APIs, database structure, or security rules.</h3>
+          <p style="font-size: 12px; color: var(--text-muted);">Tester knows endpoints, schema tables, and role policies.</p>
+        </div>
+
+        <div class="card">
+          <div style="font-size: 10px; font-weight: bold; color: var(--supabase-green); text-transform: uppercase;">03 / Target</div>
+          <h3 style="font-size: 16px; font-weight: bold; margin: 6px 0;">Useful for integration and security testing.</h3>
+          <p style="font-size: 12px; color: var(--text-muted);">Finds data leaks, broken permissions, and API mismatches.</p>
+        </div>
+      </div>
+
+      <div class="speaker-box" style="border-left-color: #f59e0b;">
+        <div class="speaker-title" style="color: #f59e0b;">Key Takeaways</div>
+        <div class="speaker-text">
+          • In grey-box testing, the tester does not need full code access, but knows basic things about how the backend and database work.<br />
+          • This helps the tester test both the mobile app screens and the backend API data at the exact same time.<br />
+          • It is very useful for catching hidden security leaks and database issues that normal users cannot see on the screen.
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 10 -->
+    <div class="slide" id="slide10">
+      <div>
+        <span class="pill pill-cyan" style="color:#f59e0b; border-color: rgba(245,158,11,0.3); background: rgba(245,158,11,0.1);">Member 4 (Puspendar) • Slide 10</span>
+        <h2 style="font-size: 32px; font-weight: 800; margin-top: 8px;">
+          Grey-Box Testing in the <span class="gradient-text">Case Study</span>
+        </h2>
+      </div>
+
+      <div class="grid-2" style="margin: auto 0;">
+        <div class="card">
+          <div style="font-size: 10px; font-weight: bold; color: var(--react-cyan); text-transform: uppercase;">Test 01</div>
+          <h3 style="font-size: 16px; font-weight: bold; margin: 4px 0;">Test access to another user's comments.</h3>
+          <p style="font-size: 12px; color: var(--text-muted);">Simulate a scenario where User A attempts to view or delete User B's private comments.</p>
+        </div>
+
+        <div class="card">
+          <div style="font-size: 10px; font-weight: bold; color: #f59e0b; text-transform: uppercase;">Test 02</div>
+          <h3 style="font-size: 16px; font-weight: bold; margin: 4px 0;">Examine API responses and database permissions.</h3>
+          <p style="font-size: 12px; color: var(--text-muted);">Directly monitor HTTP status codes (200 OK vs 403 Forbidden) and payload headers.</p>
+        </div>
+
+        <div class="card">
+          <div style="font-size: 10px; font-weight: bold; color: var(--supabase-green); text-transform: uppercase;">Test 03</div>
+          <h3 style="font-size: 16px; font-weight: bold; margin: 4px 0;">Check whether Row-Level Security rules prevent unauthorized access.</h3>
+          <p style="font-size: 12px; color: var(--text-muted);">Verify that PostgreSQL RLS policies block unauthorized queries even if client UI fails.</p>
+        </div>
+
+        <div class="card">
+          <div style="font-size: 10px; font-weight: bold; color: #a78bfa; text-transform: uppercase;">Test 04</div>
+          <h3 style="font-size: 16px; font-weight: bold; margin: 4px 0;">Investigate data-handling and security issues.</h3>
+          <p style="font-size: 12px; color: var(--text-muted);">Ensure sensitive user tokens, email addresses, and comments are safely isolated.</p>
+        </div>
+      </div>
+
+      <div class="speaker-box" style="border-left-color: #f59e0b;">
+        <div class="speaker-title" style="color: #f59e0b;">Key Takeaways</div>
+        <div class="speaker-text">
+          • If User A tries to delete User B's comments, grey-box testing checks whether the Supabase backend blocks this bad action.<br />
+          • Even if the mobile screen hides the delete button, someone could still send a direct API call, so backend rules must block it.<br />
+          • This shows why we must test backend security rules and cannot just rely on what looks safe on the mobile screen.
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 11 -->
+    <div class="slide" id="slide11">
+      <div>
+        <span class="pill pill-cyan">Member 1 (Rajat) • Slide 11</span>
+        <h2 style="font-size: 32px; font-weight: 800; margin-top: 8px;">
+          Comparison of <span class="gradient-text">All Three Methods</span>
+        </h2>
+      </div>
+
+      <div style="margin: auto 0;">
+        <table style="width: 100%; border-collapse: collapse; background: rgba(10,15,26,0.7); border: 1px solid var(--card-border); border-radius: 12px; overflow: hidden;">
+          <thead>
+            <tr style="background: rgba(30,41,59,0.8); color: var(--text-muted); font-size: 12px; text-transform: uppercase;">
+              <th style="padding: 12px 16px; text-align: left;">Method</th>
+              <th style="padding: 12px 16px; text-align: left;">Main Focus</th>
+              <th style="padding: 12px 16px; text-align: left;">Perspective</th>
+              <th style="padding: 12px 16px; text-align: left;">Best For</th>
+            </tr>
+          </thead>
+          <tbody style="font-size: 13px;">
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.06);">
+              <td style="padding: 12px 16px; font-weight: bold; color: var(--react-cyan);">Black-box</td>
+              <td style="padding: 12px 16px; color: #fff; font-weight: bold;">External behaviour</td>
+              <td style="padding: 12px 16px; color: var(--text-muted);">No code access (User perspective)</td>
+              <td style="padding: 12px 16px; color: #e2e8f0;">Visible UI defects & user workflows</td>
+            </tr>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.06);">
+              <td style="padding: 12px 16px; font-weight: bold; color: #c084fc;">White-box</td>
+              <td style="padding: 12px 16px; color: #fff; font-weight: bold;">Internal code</td>
+              <td style="padding: 12px 16px; color: var(--text-muted);">Full code access (Developer perspective)</td>
+              <td style="padding: 12px 16px; color: #e2e8f0;">Faulty logic branches, dead code, memory leaks</td>
+            </tr>
+            <tr>
+              <td style="padding: 12px 16px; font-weight: bold; color: #f59e0b;">Grey-box</td>
+              <td style="padding: 12px 16px; color: #fff; font-weight: bold;">Partial internal knowledge</td>
+              <td style="padding: 12px 16px; color: var(--text-muted);">Hybrid view (API & schema)</td>
+              <td style="padding: 12px 16px; color: #e2e8f0;">Unauthorized access & integration security</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="speaker-box">
+        <div class="speaker-title">Key Takeaways</div>
+        <div class="speaker-text">
+          • Black-box testing ensures the app runs smoothly and looks right for users, while white-box testing verifies that the inner lines of code are written cleanly and without errors.<br />
+          • Grey-box testing fills the gap in between by testing APIs and database rules using partial knowledge of the system design.<br />
+          • Each testing method has its own unique strengths, which is why engineering teams use all three together rather than picking just one.
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 12 -->
+    <div class="slide" id="slide12">
+      <div>
+        <span class="pill pill-green">Member 1 (Rajat) • Slide 12</span>
+        <h2 style="font-size: 32px; font-weight: 800; margin-top: 8px;">
+          Results, Limitations and <span class="gradient-text">Conclusion</span>
+        </h2>
+      </div>
+
+      <div class="grid-4" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin: auto 0;">
+        <div class="card">
+          <h3 style="font-size: 14px; font-bold; color: #fff;">No single testing method finds every defect.</h3>
+          <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Each method inspects different system layers (UI, Code, Database).</p>
+        </div>
+        <div class="card">
+          <h3 style="font-size: 14px; font-bold; color: #fff;">Combining testing methods gives broader coverage.</h3>
+          <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Layering all three methods gives complete software quality assurance.</p>
+        </div>
+        <div class="card">
+          <h3 style="font-size: 14px; font-bold; color: #fff;">The paper evaluates one demo application.</h3>
+          <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Tested on a simplified React Native and Supabase demonstration app.</p>
+        </div>
+        <div class="card">
+          <h3 style="font-size: 14px; font-bold; color: #fff;">Manual evaluation without performance metrics.</h3>
+          <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Does not include automated stress testing or speed benchmarks.</p>
+        </div>
+        <div class="card">
+          <h3 style="font-size: 14px; font-bold; color: #fff;">Future work: Automated CI/CD testing.</h3>
+          <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Future studies could run automated tests across larger enterprise systems.</p>
+        </div>
+      </div>
+
+      <div class="speaker-box green">
+        <div class="speaker-title">Key Takeaways</div>
+        <div class="speaker-text">
+          • The biggest takeaway is that overall software quality improves most when black-box, white-box, and grey-box testing are combined together to support each other.<br />
+          • Because this research study evaluated a single demo app with manual testing, the results should be taken as a helpful guide rather than a universal rule for every company.<br />
+          • In future projects, adding automated tests and measuring system performance under heavy load would provide even deeper insights into software reliability.
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div style="font-size: 12px; color: var(--text-muted);" id="slideIndicator">Slide 1 of 3</div>
+    <div style="display: flex; gap: 8px;">
+      <button class="nav-btn" id="prevBtn" onclick="prevSlide()" disabled>← Previous</button>
+      <button class="nav-btn primary" id="nextBtn" onclick="nextSlide()">Next Slide →</button>
+    </div>
+  </footer>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 12;
+    let seconds = 0;
+
+    // Timer
+    setInterval(() => {
+      seconds++;
+      const m = String(Math.floor(seconds / 60)).padStart(2, '0');
+      const s = String(seconds % 60).padStart(2, '0');
+      document.getElementById('timerDisplay').innerText = `${m}:${s}`;
+    }, 1000);
+
+    function updateView() {
+      for (let i = 1; i <= totalSlides; i++) {
+        document.getElementById(`slide${i}`).classList.toggle('active', i === currentSlide);
+      }
+      const buttons = document.querySelectorAll('.tab-btn');
+      buttons.forEach((btn, idx) => {
+        btn.classList.toggle('active', idx + 1 === currentSlide);
+      });
+      document.getElementById('slideIndicator').innerText = `Slide ${currentSlide} of ${totalSlides}`;
+      document.getElementById('prevBtn').disabled = currentSlide === 1;
+      document.getElementById('nextBtn').innerText = currentSlide === totalSlides ? 'Member 1 Done' : 'Next Slide →';
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides) {
+        currentSlide++;
+        updateView();
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 1) {
+        currentSlide--;
+        updateView();
+      }
+    }
+
+    function goToSlide(n) {
+      currentSlide = n;
+      updateView();
+    }
+
+    // Keyboard navigation
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+      if (e.key === 'ArrowLeft') prevSlide();
+    });
+
+    // Flow animation
+    function simulateDataFlow() {
+      const nodes = [1, 2, 3, 4];
+      nodes.forEach((n, i) => {
+        setTimeout(() => {
+          nodes.forEach(x => document.getElementById(`node${x}`).classList.remove('active'));
+          document.getElementById(`node${n}`).classList.add('active');
+        }, i * 600);
+      });
+      setTimeout(() => {
+        nodes.forEach(x => document.getElementById(`node${x}`).classList.remove('active'));
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
