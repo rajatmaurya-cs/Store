@@ -265,9 +265,6 @@
     </div>
 
     <div class="header-controls">
-      <div class="timer-badge">
-        <span id="timerDisplay">00:00</span>
-      </div>
       <button class="tab-btn active" onclick="goToSlide(1)">1. Title</button>
       <button class="tab-btn" onclick="goToSlide(2)">2. Problem</button>
       <button class="tab-btn" onclick="goToSlide(3)">3. Arch</button>
@@ -865,14 +862,6 @@
     let currentSlide = 1;
     const totalSlides = 12;
     let seconds = 0;
-
-    // Timer
-    setInterval(() => {
-      seconds++;
-      const m = String(Math.floor(seconds / 60)).padStart(2, '0');
-      const s = String(seconds % 60).padStart(2, '0');
-      document.getElementById('timerDisplay').innerText = `${m}:${s}`;
-    }, 1000);
 
     function updateView() {
       for (let i = 1; i <= totalSlides; i++) {

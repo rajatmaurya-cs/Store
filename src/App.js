@@ -6,20 +6,6 @@ window.App = function App() {
 
   const [currentSlide, setCurrentSlide] = useState(1);
   const totalSlides = 12;
-  const [secondsElapsed, setSecondsElapsed] = useState(0);
-  const [isTimerRunning, setIsTimerRunning] = useState(false);
-
-  useEffect(() => {
-    let interval = null;
-    if (isTimerRunning) {
-      interval = setInterval(() => {
-        setSecondsElapsed(sec => sec + 1);
-      }, 1000);
-    } else {
-      clearInterval(interval);
-    }
-    return () => clearInterval(interval);
-  }, [isTimerRunning]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -41,7 +27,6 @@ window.App = function App() {
   const nextSlide = () => {
     if (currentSlide < totalSlides) {
       setCurrentSlide(s => s + 1);
-      if (!isTimerRunning) setIsTimerRunning(true);
     }
   };
 
@@ -59,12 +44,6 @@ window.App = function App() {
         document.exitFullscreen().catch(() => {});
       }
     }
-  };
-
-  const formatTimer = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
   const currentSpeaker = currentSlide <= 3 
@@ -100,25 +79,6 @@ window.App = function App() {
 
         {/* Slide Navigation Tabs & Controls */}
         <div className="flex items-center gap-2">
-          {/* Timer */}
-          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 border border-slate-200 text-xs font-mono text-slate-700">
-            <button 
-              onClick={() => setIsTimerRunning(!isTimerRunning)} 
-              className="text-slate-600 hover:text-blue-600 transition-colors"
-              title={isTimerRunning ? "Pause Timer" : "Start Timer"}
-            >
-              {isTimerRunning ? <Icons.pause /> : <Icons.play />}
-            </button>
-            <span className="font-semibold">{formatTimer(secondsElapsed)}</span>
-            <button 
-              onClick={() => { setSecondsElapsed(0); setIsTimerRunning(false); }} 
-              className="text-slate-400 hover:text-rose-600 transition-colors ml-1"
-              title="Reset Timer"
-            >
-              <Icons.rotate />
-            </button>
-          </div>
-
           {/* Clean Segmented Tab Buttons */}
           <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200 overflow-x-auto max-w-[540px]">
             {PRESENTATION_DATA.slideTabs.map((s) => (
